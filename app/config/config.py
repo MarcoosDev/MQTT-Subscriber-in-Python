@@ -9,3 +9,6 @@ class MQTTData:
     CLIENT_NAME = os.getenv("SISME_MQTT_USERNAME")
     CLIENT_PASSWORD = os.getenv("SISME_MQTT_PASSWORD")
     CLIENT_ID = os.getenv("SISME_MQTT_CLIENT_ID", "sisme-bridge")
+
+class SISMEData:
+    URL = int(os.getenv("SISME_BACKEND_URL"))

@@ -1,13 +1,13 @@
 import paho.mqtt.client as mqtt
 from app.service.mqtt_service import On
-from app.config.mqtt_data import MQTTData
+from app.config.config import MQTTData
 
 class MQTT:
     def __int__(self):
         self.On = On
         
     @staticmethod    
-    def init():
+    def on():
         BROKER = MQTTData.BROKER
         PORT = MQTTData.PORT
 

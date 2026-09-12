@@ -2,18 +2,14 @@ import json
 
 class On:
     def connect(client, userdata, flags, reason_code, properties):
-        print(">>> on_connect foi chamado")
-        print("Reason code:", reason_code)
-
         if reason_code == 0:
-            print(">>> CONECTADO!")
+            print("Sistema iniciado")
             client.subscribe("botao/estado")
         else:
-            print(">>> FALHA NA CONEXÃO")
+            print(f"Conexão falhou, Codigo: {reason_code}")
 
     def disconnect(client, userdata, flags, reason_code, properties):
-        print(">>> DESCONECTADO")
-        print("Reason code:", reason_code)
+        print(f"Conexão perdida Codigo: {reason_code}")
 
     def message(client, userdata, msg):
         men = json.loads(msg.payload.decode())
