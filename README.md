@@ -1,23 +1,25 @@
 # MQTT Subscriber em Python
 
-Base de integração entre dispositivos **ESP32** e o sistema SISME. Este
-serviço funciona como uma ponte MQTT: recebe as mensagens publicadas pelos
-dispositivos, organiza o payload e deixa o caminho preparado para que os dados
-sejam encaminhados ao backend da aplicação. Os schemas de validação já estão
-definidos, mas sua aplicação no fluxo de recebimento ainda é um próximo passo.
+Subscriber MQTT em Python para integração entre dispositivos **ESP32** e
+sistemas backend. Este projeto funciona como uma base de comunicação: recebe
+as mensagens publicadas pelos dispositivos, organiza o payload e deixa o
+caminho preparado para encaminhar os dados ao sistema que o utilizar. A
+primeira aplicação planejada é a integração com o SISME. Os schemas de
+validação já estão definidos, mas sua aplicação no fluxo de recebimento ainda
+é um próximo passo.
 
 ## Visão geral
 
 ```text
-ESP32  ── MQTT/TLS ──>  SISME Bridge (Python)  ──>  Backend SISME
+ESP32  ── MQTT/TLS ──>  MQTT Subscriber em Python  ──>  Sistema de destino
                               │
                               └── tópico: botao/estado
 ```
 
-O bridge centraliza a comunicação com o broker MQTT e evita que o backend
+O subscriber centraliza a comunicação com o broker MQTT e evita que o backend
 precise lidar diretamente com a conexão de cada ESP32. Isso permite adicionar
 dispositivos, sensores e regras de encaminhamento sem acoplar o hardware à
-implementação interna do sistema.
+implementação interna do sistema de destino.
 
 ## Estado atual
 
@@ -25,15 +27,15 @@ Atualmente, o projeto:
 
 - conecta-se a um broker MQTT usando TLS;
 - autentica no broker com usuário e senha;
-- usa `sisme-bridge` como identificador MQTT padrão;
+- usa `sisme-bridge` como identificador MQTT padrão na implementação atual;
 - assina o tópico `botao/estado` após conectar;
 - decodifica as mensagens recebidas como JSON;
 - exibe a origem e os dados recebidos no console;
 - define schemas Pydantic para mensagens de sensores, alertas e login.
 
-O encaminhamento efetivo para o backend SISME ainda é o próximo ponto de
-integração. A variável `SISME_BACKEND_URL` já existe como configuração
-reservada para essa etapa.
+O encaminhamento efetivo para o sistema de destino ainda é o próximo ponto de
+integração. Na implementação destinada ao SISME, a variável
+`SISME_BACKEND_URL` já existe como configuração reservada para essa etapa.
 
 ## Tecnologias
 
@@ -59,7 +61,7 @@ As dependências estão em [`requirements.txt`](./requirements.txt).
 │   ├── service/
 │   │   └── mqtt_service.py    # Callbacks de conexão e mensagens
 │   └── main.py                # Ponto de entrada da aplicação
-├── run.py                     # Inicializa o bridge
+├── run.py                     # Inicializa o subscriber
 ├── requirements.txt
 └── .env                       # Configuração local; não versionar
 ```
@@ -112,7 +114,7 @@ python run.py
 ```
 
 Ao iniciar corretamente, o processo mantém a conexão aberta com
-`loop_forever()`. Quando uma mensagem chega ao tópico assinado, o bridge
+`loop_forever()`. Quando uma mensagem chega ao tópico assinado, o subscriber
 imprime no console os campos `data` e `origem`.
 
 Para interromper a execução, use `Ctrl+C`.
@@ -165,7 +167,7 @@ repositório [MarcoosDev/ESP32-MQTT](https://github.com/MarcoosDev/ESP32-MQTT).
 Ele foi desenvolvido para a placa **ESP32-C3 DevKitM-1**, usando o framework
 Arduino e o PlatformIO.
 
-Esse projeto já fornece a base necessária para a comunicação com o bridge:
+Esse projeto já fornece a base necessária para a comunicação com o subscriber:
 
 - conexão e manutenção da rede Wi-Fi;
 - conexão autenticada com o broker MQTT;
@@ -198,10 +200,11 @@ O firmware do ESP32 deve:
 
 Para configurar o firmware, os parâmetros `mqtt_server`, `mqtt_port`,
 `mqtt_user`, `mqtt_pass`, `client_id` e `ca_cert` devem apontar para o mesmo
-ambiente utilizado pelas variáveis `SISME_MQTT_*` deste projeto. O certificado
-CA usado pelo ESP32 deve validar o broker configurado no bridge.
+ambiente utilizado pelas variáveis `SISME_MQTT_*` da implementação para o
+SISME. O certificado CA usado pelo ESP32 deve validar o broker configurado no
+subscriber.
 
-O broker deve permitir que o usuário do bridge assine o tópico e que os
+O broker deve permitir que o usuário do subscriber assine o tópico e que os
 dispositivos publiquem nele. Em ambientes com vários tipos de mensagem, os
 tópicos podem ser separados posteriormente, por exemplo:
 
@@ -216,20 +219,20 @@ código é `botao/estado`.
 ## Próximos passos sugeridos
 
 - validar os payloads recebidos com `PayloadSchema` antes do processamento;
-- encaminhar sensores, alertas e logins para endpoints do backend SISME;
+- encaminhar sensores, alertas e logins para endpoints do sistema de destino;
 - definir tópicos e permissões por dispositivo;
 - adicionar logs estruturados e tratamento de mensagens inválidas;
 - implementar reconexão com backoff e monitoramento da conexão;
 - adicionar testes para os contratos de payload e para os callbacks MQTT;
-- documentar o contrato definitivo entre o firmware ESP32, o bridge e o
-  backend.
+- documentar o contrato definitivo entre o firmware ESP32, o subscriber e o
+  sistema de destino.
 
 ## Segurança
 
 - não versione `.env`, certificados ou credenciais;
 - use MQTT sobre TLS e valide os certificados do broker;
 - forneça permissões mínimas para cada cliente MQTT;
-- atribua um `CLIENT_ID` único quando houver múltiplas instâncias do bridge;
+- atribua um `CLIENT_ID` único quando houver múltiplas instâncias do subscriber;
 - não registre senhas ou tokens nos logs;
 - rotacione credenciais que tenham sido expostas.
 
