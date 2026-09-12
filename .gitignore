@@ -1,0 +1,5 @@
+.vscode
+venv
+data
+__pycache__
+mqtt_data.py
