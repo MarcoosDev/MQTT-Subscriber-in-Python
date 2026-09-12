@@ -1,4 +1,4 @@
-# SISME Bridge
+# MQTT Subscriber em Python
 
 Base de integração entre dispositivos **ESP32** e o sistema SISME. Este
 serviço funciona como uma ponte MQTT: recebe as mensagens publicadas pelos
