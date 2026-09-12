@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 from app.service.mqtt_service import On
-from app.config.mqtt_data import MQQTData
+from app.config.mqtt_data import MQTTData
 
 class MQTT:
     def __int__(self):
@@ -8,12 +8,12 @@ class MQTT:
         
     @staticmethod    
     def init():
-        BROKER = MQQTData.BROKER
-        PORT = MQQTData.PORT
+        BROKER = MQTTData.BROKER
+        PORT = MQTTData.PORT
 
         client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 
-        client.username_pw_set(MQQTData.CLIENT_NAME,MQQTData.CLIENT_PASSWORD)
+        client.username_pw_set(MQTTData.CLIENT_NAME,MQTTData.CLIENT_PASSWORD)
 
         client.tls_set()
 
