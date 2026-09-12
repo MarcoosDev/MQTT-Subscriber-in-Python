@@ -158,6 +158,35 @@ Regras dos campos:
 
 ## Integração com o ESP32
 
+### Firmware de referência
+
+O firmware utilizado como referência para esta ponte está disponível no
+repositório [MarcoosDev/ESP32-MQTT](https://github.com/MarcoosDev/ESP32-MQTT).
+Ele foi desenvolvido para a placa **ESP32-C3 DevKitM-1**, usando o framework
+Arduino e o PlatformIO.
+
+Esse projeto já fornece a base necessária para a comunicação com o bridge:
+
+- conexão e manutenção da rede Wi-Fi;
+- conexão autenticada com o broker MQTT;
+- comunicação MQTT protegida por TLS/SSL;
+- publicação e assinatura de tópicos MQTT;
+- payloads em formato JSON;
+- reconexão automática quando o Wi-Fi ou o broker ficam indisponíveis;
+- certificado CA configurado para validar o broker;
+- monitor serial em `115200` para acompanhamento da comunicação.
+
+No firmware, a lógica está organizada principalmente da seguinte forma:
+
+| Componente | Responsabilidade |
+| --- | --- |
+| `main.cpp` | Inicializa a serial, o Wi-Fi, o cliente MQTT e os callbacks. |
+| `wifi.cpp` | Conecta o ESP32 à rede e mantém a conexão ativa. |
+| `mqtt.cpp` | Gerencia a conexão MQTT e a inscrição em tópicos. |
+| `conexoes.cpp` | Coordena as tentativas de reconexão. |
+| `config.cpp` | Concentra credenciais e parâmetros de rede e do broker. |
+| `json.cpp` | Monta os payloads JSON publicados pelo dispositivo. |
+
 O firmware do ESP32 deve:
 
 1. conectar-se à rede Wi-Fi;
@@ -166,6 +195,11 @@ O firmware do ESP32 deve:
 4. publicar os payloads JSON no tópico `botao/estado`;
 5. usar um valor estável e identificável em `origem`;
 6. implementar reconexão e reenvio conforme a necessidade do projeto.
+
+Para configurar o firmware, os parâmetros `mqtt_server`, `mqtt_port`,
+`mqtt_user`, `mqtt_pass`, `client_id` e `ca_cert` devem apontar para o mesmo
+ambiente utilizado pelas variáveis `SISME_MQTT_*` deste projeto. O certificado
+CA usado pelo ESP32 deve validar o broker configurado no bridge.
 
 O broker deve permitir que o usuário do bridge assine o tópico e que os
 dispositivos publiquem nele. Em ambientes com vários tipos de mensagem, os
@@ -198,3 +232,8 @@ código é `botao/estado`.
 - atribua um `CLIENT_ID` único quando houver múltiplas instâncias do bridge;
 - não registre senhas ou tokens nos logs;
 - rotacione credenciais que tenham sido expostas.
+
+As credenciais e o certificado CA do firmware também devem permanecer fora de
+repositórios públicos. Consulte o
+[README do projeto ESP32-MQTT](https://github.com/MarcoosDev/ESP32-MQTT) para
+as instruções de compilação, upload e configuração da placa.
