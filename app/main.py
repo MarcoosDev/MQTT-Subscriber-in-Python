@@ -1,5 +1,5 @@
-from app.mqtt.main import MQTT
+from app.mqtt.main import Mqtt
 
 class PythonClient:
     def run():
-        MQTT.on()
+        Mqtt.on()
