@@ -11,4 +11,4 @@ class MQTTData:
     CLIENT_ID = os.getenv("SISME_MQTT_CLIENT_ID", "sisme-bridge")
 
 class SISMEData:
-    URL = int(os.getenv("SISME_BACKEND_URL"))
+    URL = os.getenv("SISME_BACKEND_URL")

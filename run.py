@@ -1,3 +1,3 @@
-from app.main import ligar
+from app.main import PythonClient
 
-ligar()
+PythonClient.run()
